@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Result</title>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+</head>
+<body>
+<!-- Small modal -->
+<div id="myModal" class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog"
+     aria-labelledby="myLargeModalLabel">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content" style="padding: 10px;">
+            <div class="modal-header">
+                <h4 class="modal-title">Input params:</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="pos_x" class="control-label">Position x:</label>
+                    <input type="number" class="form-control" id="pos_x">
+                </div>
+                <div class="form-group">
+                    <label for="pos_x" class="control-label">Position y:</label>
+                    <input type="number" class="form-control" id="pos_y">
+                </div>
+                <div class="form-group">
+                    <label for="label" class="control-label">Label:</label>
+                    <input type="text" class="form-control" id="label">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="add_new();">Save</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="page-header" style="margin-top: 50px;">
+        <h1>Welcome upload img to locate position
+            <small>developed by xx</small>
+        </h1>
+    </div>
+    <a href="/">Back to Index </a>
+    <div class="row" style="padding-bottom: 20px;">
+        <button type="button" class="btn btn-info" data-toggle="modal" data-target=".bs-example-modal-sm"
+                style="float: right">
+            Add this image to database
+        </button>
+    </div>
+    <div style="display: flex;justify-content: space-around">
+        <div class="thumbnail" style="width: 45%;">
+            <h3>Input image</h3>
+            <img src="/static/uploads/{{ q_img }}.jpg" alt="...">
+            <div class="caption">
+                <h4>Predict: &nbsp;&nbsp;{{ max_img.label }}</h4>
+                <h4>Position x: {{ max_img.position_x }}</h4>
+                <h4>Position y: {{ max_img.position_y }}</h4>
+            </div>
+        </div>
+        {% if max_img is not none %}
+            <div class="thumbnail" style="width: 45%;">
+                <h3>Match image</h3>
+                <img src="/static/uploads/{{ max_img.img_path }}.jpg" alt="...">
+                <div class="caption">
+                    <h4>Likes: {{ per }}%</h4>
+                    <h4>Label: {{ max_img.label }}</h4>
+                </div>
+            </div>
+        {% endif %}
+        {% if max_img is none %}
+            <div class="thumbnail" style="width: 45%;">
+                <h3>Match image</h3>
+                <h1>The database is empty! </h1>
+                <h2>Add some image to it.</h2>
+            </div>
+        {% endif %}
+    </div>
+</div>
+<script src="/static/js/jquery.min.js"></script>
+<script src="/static/js/bootstrap.min.js"></script>
+<script>
+    function add_new() {
+        $.ajax({
+            url: "/add_new_record",
+            method: "POST",
+            data: {
+                "img": "{{ q_img }}",
+                "pos_x": $("#pos_x").val(),
+                "pos_y": $("#pos_y").val(),
+                "label": $("#label").val()
+            },
+            success: function (ret) {
+                $('#myModal').modal('hide');
+                console.log(ret);
+                alert("Add success, reload the page!");
+                location.reload();
+            }, error: function (ret) {
+                console.log(ret)
+            }
+        });
+    }
+</script>
+</body>
+</html>
